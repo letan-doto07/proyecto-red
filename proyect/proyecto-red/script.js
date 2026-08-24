@@ -1,25 +1,38 @@
 const canvas = document.getElementById("canvas");
+
 const ctx = canvas.getContext("2d");
 
 const color = document.getElementById("color");
+
 const tamano = document.getElementById("tamano");
 
+
 let dibujando = false;
+
 let herramienta = "lapiz";
 
+
+// ==============================
+// CONFIGURACIÓN
+// ==============================
+
 ctx.lineCap = "round";
+
 ctx.lineJoin = "round";
 
 
 // ==============================
-// POSICIÓN DEL MOUSE / TÁCTIL
+// POSICIÓN DEL MOUSE
 // ==============================
 
 function obtenerPosicion(e) {
 
-    const rect = canvas.getBoundingClientRect();
+    const rect =
+        canvas.getBoundingClientRect();
+
 
     return {
+
         x: Math.floor(
             (e.clientX - rect.left) *
             (canvas.width / rect.width)
@@ -29,7 +42,9 @@ function obtenerPosicion(e) {
             (e.clientY - rect.top) *
             (canvas.height / rect.height)
         )
+
     };
+
 }
 
 
@@ -37,178 +52,311 @@ function obtenerPosicion(e) {
 // EMPEZAR A DIBUJAR
 // ==============================
 
-canvas.addEventListener("pointerdown", function(e) {
+canvas.addEventListener(
+    "pointerdown",
+    function(e) {
 
-    const posicion = obtenerPosicion(e);
+        const posicion =
+            obtenerPosicion(e);
 
-    // Cubeta
-    if (herramienta === "cubeta") {
 
-        rellenar(
-            posicion.x,
-            posicion.y,
-            color.value
+        // CUBETA
+
+        if (herramienta === "cubeta") {
+
+            rellenar(
+                posicion.x,
+                posicion.y,
+                color.value
+            );
+
+            return;
+
+        }
+
+
+        // LÁPIZ / GOMA
+
+        dibujando = true;
+
+
+        canvas.setPointerCapture(
+            e.pointerId
         );
 
-        return;
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            posicion.x,
+            posicion.y
+        );
+
     }
-
-    dibujando = true;
-
-    canvas.setPointerCapture(e.pointerId);
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        posicion.x,
-        posicion.y
-    );
-});
+);
 
 
 // ==============================
 // DIBUJAR
 // ==============================
 
-canvas.addEventListener("pointermove", function(e) {
+canvas.addEventListener(
+    "pointermove",
+    function(e) {
 
-    if (!dibujando) return;
+        if (!dibujando) return;
 
-    const posicion = obtenerPosicion(e);
 
-    ctx.lineWidth = Number(tamano.value);
+        const posicion =
+            obtenerPosicion(e);
 
-    if (herramienta === "goma") {
-        ctx.strokeStyle = "#ffffff";
-    } else {
-        ctx.strokeStyle = color.value;
+
+        ctx.lineWidth =
+            Number(tamano.value);
+
+
+        if (herramienta === "goma") {
+
+            ctx.strokeStyle =
+                "#ffffff";
+
+        } else {
+
+            ctx.strokeStyle =
+                color.value;
+
+        }
+
+
+        ctx.lineTo(
+            posicion.x,
+            posicion.y
+        );
+
+
+        ctx.stroke();
+
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            posicion.x,
+            posicion.y
+        );
+
     }
-
-    ctx.lineTo(
-        posicion.x,
-        posicion.y
-    );
-
-    ctx.stroke();
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        posicion.x,
-        posicion.y
-    );
-});
+);
 
 
 // ==============================
-// TERMINAR
+// TERMINAR DIBUJO
 // ==============================
 
-canvas.addEventListener("pointerup", function() {
+canvas.addEventListener(
+    "pointerup",
+    function() {
 
-    dibujando = false;
-    ctx.beginPath();
+        dibujando = false;
 
-});
+        ctx.beginPath();
 
-canvas.addEventListener("pointercancel", function() {
+    }
+);
 
-    dibujando = false;
-    ctx.beginPath();
 
-});
+canvas.addEventListener(
+    "pointercancel",
+    function() {
+
+        dibujando = false;
+
+        ctx.beginPath();
+
+    }
+);
 
 
 // ==============================
 // LÁPIZ
 // ==============================
 
-document.getElementById("lapiz").addEventListener("click", function() {
+document
+    .getElementById("lapiz")
+    .addEventListener(
+        "click",
+        function() {
 
-    herramienta = "lapiz";
+            herramienta = "lapiz";
 
-});
+        }
+    );
 
 
 // ==============================
 // GOMA
 // ==============================
 
-document.getElementById("goma").addEventListener("click", function() {
+document
+    .getElementById("goma")
+    .addEventListener(
+        "click",
+        function() {
 
-    herramienta = "goma";
+            herramienta = "goma";
 
-});
+        }
+    );
 
 
 // ==============================
 // CUBETA
 // ==============================
 
-document.getElementById("cubeta").addEventListener("click", function() {
+document
+    .getElementById("cubeta")
+    .addEventListener(
+        "click",
+        function() {
 
-    herramienta = "cubeta";
+            herramienta = "cubeta";
 
-});
+        }
+    );
 
 
 // ==============================
 // LIMPIAR
 // ==============================
 
-document.getElementById("limpiar").addEventListener("click", function() {
+document
+    .getElementById("limpiar")
+    .addEventListener(
+        "click",
+        function() {
 
-    if (confirm("¿Querés limpiar todo el dibujo?")) {
+            if (
+                confirm(
+                    "¿Querés limpiar todo el dibujo?"
+                )
+            ) {
 
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+                ctx.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
 
-    }
+            }
 
-});
+        }
+    );
 
 
 // ==============================
 // GUARDAR DIBUJO
 // ==============================
 
-document.getElementById("guardar").addEventListener("click", function() {
+document
+    .getElementById("guardar")
+    .addEventListener(
+        "click",
+        function() {
 
-    const nombreInput = document.getElementById("nombre");
+            const nombreInput =
+                document.getElementById(
+                    "nombre"
+                );
 
-    let nombre = nombreInput.value.trim();
 
-    if (nombre === "") {
-        nombre = "Dibujo sin nombre";
-    }
+            let nombre =
+                nombreInput.value.trim();
 
-    const imagen = canvas.toDataURL("image/png");
 
-    const dibujos = JSON.parse(
-        localStorage.getItem("dibujos") || "[]"
+            if (nombre === "") {
+
+                nombre =
+                    "Dibujo sin nombre";
+
+            }
+
+
+            const imagen =
+                canvas.toDataURL(
+                    "image/png"
+                );
+
+
+            const dibujos =
+                JSON.parse(
+                    localStorage.getItem(
+                        "dibujos"
+                    ) || "[]"
+                );
+
+
+            // SI ESTAMOS EDITANDO
+            if (
+                window.dibujoEditando !==
+                undefined
+            ) {
+
+                dibujos[
+                    window.dibujoEditando
+                ].nombre = nombre;
+
+
+                dibujos[
+                    window.dibujoEditando
+                ].imagen = imagen;
+
+
+                window.dibujoEditando =
+                    undefined;
+
+
+                alert(
+                    "¡Dibujo actualizado! 🎨"
+                );
+
+            }
+
+            // SI ES UN DIBUJO NUEVO
+            else {
+
+                dibujos.push({
+
+                    nombre: nombre,
+
+                    imagen: imagen,
+
+                    valoracion: 0
+
+                });
+
+
+                alert(
+                    "¡Dibujo guardado! 🎨"
+                );
+
+            }
+
+
+            localStorage.setItem(
+                "dibujos",
+                JSON.stringify(dibujos)
+            );
+
+
+            nombreInput.value = "";
+
+
+            cargarGaleria();
+
+        }
     );
-
-    dibujos.push({
-        nombre: nombre,
-        imagen: imagen
-    });
-
-    localStorage.setItem(
-        "dibujos",
-        JSON.stringify(dibujos)
-    );
-
-    nombreInput.value = "";
-
-    cargarGaleria();
-
-    alert("¡Dibujo guardado! 🎨");
-
-});
 
 
 // ==============================
@@ -217,13 +365,22 @@ document.getElementById("guardar").addEventListener("click", function() {
 
 function cargarGaleria() {
 
-    const galeria = document.getElementById("galeria");
+    const galeria =
+        document.getElementById(
+            "galeria"
+        );
 
-    const dibujos = JSON.parse(
-        localStorage.getItem("dibujos") || "[]"
-    );
+
+    const dibujos =
+        JSON.parse(
+            localStorage.getItem(
+                "dibujos"
+            ) || "[]"
+        );
+
 
     galeria.innerHTML = "";
+
 
     if (dibujos.length === 0) {
 
@@ -231,38 +388,173 @@ function cargarGaleria() {
             "<p>Todavía no hay dibujos guardados.</p>";
 
         return;
+
     }
 
 
-    dibujos.forEach(function(dibujo, indice) {
+    dibujos.forEach(
+        function(dibujo, indice) {
 
-        const tarjeta = document.createElement("div");
+            const tarjeta =
+                document.createElement(
+                    "div"
+                );
 
-        tarjeta.className = "tarjeta";
 
-        tarjeta.innerHTML = `
+            tarjeta.className =
+                "tarjeta";
 
-            <img src="${dibujo.imagen}">
 
-            <h3>${dibujo.nombre}</h3>
+            tarjeta.innerHTML = `
 
-            <button onclick="editarDibujo(${indice})">
-                ✏️ Editar
-            </button>
+                <img
+                    src="${dibujo.imagen}"
+                >
 
-            <button onclick="descargarDibujo(${indice})">
-                📥 Descargar
-            </button>
+                <h3>
+                    ${dibujo.nombre}
+                </h3>
 
-            <button onclick="eliminarDibujo(${indice})">
-                🗑️ Eliminar
-            </button>
 
-        `;
+                <div class="valoracion">
 
-        galeria.appendChild(tarjeta);
+                    <span>
+                        Valoración:
+                    </span>
 
-    });
+                    <div class="estrellas">
+
+                        ${crearEstrellas(
+                            indice,
+                            dibujo.valoracion || 0
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    onclick="editarDibujo(${indice})"
+                >
+                    ✏️ Editar
+                </button>
+
+
+                <button
+                    onclick="descargarDibujo(${indice})"
+                >
+                    📥 Descargar
+                </button>
+
+
+                <button
+                    onclick="eliminarDibujo(${indice})"
+                >
+                    🗑️ Eliminar
+                </button>
+
+            `;
+
+
+            galeria.appendChild(
+                tarjeta
+            );
+
+        }
+    );
+
+}
+
+
+// ==============================
+// CREAR ESTRELLAS
+// ==============================
+
+function crearEstrellas(
+    indice,
+    valoracion
+) {
+
+    let resultado = "";
+
+
+    for (
+        let i = 1;
+        i <= 5;
+        i++
+    ) {
+
+        if (i <= valoracion) {
+
+            resultado += `
+
+                <span
+                    class="estrella activa"
+                    onclick="valorarDibujo(
+                        ${indice},
+                        ${i}
+                    )"
+                >
+                    ★
+                </span>
+
+            `;
+
+        } else {
+
+            resultado += `
+
+                <span
+                    class="estrella"
+                    onclick="valorarDibujo(
+                        ${indice},
+                        ${i}
+                    )"
+                >
+                    ★
+                </span>
+
+            `;
+
+        }
+
+    }
+
+
+    return resultado;
+
+}
+
+
+// ==============================
+// VALORAR DIBUJO
+// ==============================
+
+function valorarDibujo(
+    indice,
+    valor
+) {
+
+    const dibujos =
+        JSON.parse(
+            localStorage.getItem(
+                "dibujos"
+            ) || "[]"
+        );
+
+
+    dibujos[indice].valoracion =
+        valor;
+
+
+    localStorage.setItem(
+        "dibujos",
+        JSON.stringify(dibujos)
+    );
+
+
+    cargarGaleria();
 
 }
 
@@ -273,49 +565,65 @@ function cargarGaleria() {
 
 function editarDibujo(indice) {
 
-    const dibujos = JSON.parse(
-        localStorage.getItem("dibujos") || "[]"
-    );
-
-    const dibujo = dibujos[indice];
-
-    const imagen = new Image();
-
-    imagen.onload = function() {
-
-        // Limpiar canvas
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
+    const dibujos =
+        JSON.parse(
+            localStorage.getItem(
+                "dibujos"
+            ) || "[]"
         );
 
-        // Poner el dibujo guardado
-        ctx.drawImage(
-            imagen,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
 
-        // Poner el nombre nuevamente
-        document.getElementById("nombre").value =
-            dibujo.nombre;
+    const dibujo =
+        dibujos[indice];
 
-        // Guardamos qué dibujo estamos editando
-        window.dibujoEditando = indice;
 
-        // Ir hacia arriba para verlo
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+    const imagen =
+        new Image();
 
-    };
 
-    imagen.src = dibujo.imagen;
+    imagen.onload =
+        function() {
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            ctx.drawImage(
+                imagen,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            document.getElementById(
+                "nombre"
+            ).value =
+                dibujo.nombre;
+
+
+            window.dibujoEditando =
+                indice;
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        };
+
+
+    imagen.src =
+        dibujo.imagen;
 
 }
 
@@ -324,18 +632,32 @@ function editarDibujo(indice) {
 // DESCARGAR
 // ==============================
 
-function descargarDibujo(indice) {
+function descargarDibujo(
+    indice
+) {
 
-    const dibujos = JSON.parse(
-        localStorage.getItem("dibujos") || "[]"
-    );
+    const dibujos =
+        JSON.parse(
+            localStorage.getItem(
+                "dibujos"
+            ) || "[]"
+        );
 
-    const enlace = document.createElement("a");
 
-    enlace.href = dibujos[indice].imagen;
+    const enlace =
+        document.createElement(
+            "a"
+        );
+
+
+    enlace.href =
+        dibujos[indice].imagen;
+
 
     enlace.download =
-        dibujos[indice].nombre + ".png";
+        dibujos[indice].nombre +
+        ".png";
+
 
     enlace.click();
 
@@ -346,20 +668,35 @@ function descargarDibujo(indice) {
 // ELIMINAR
 // ==============================
 
-function eliminarDibujo(indice) {
+function eliminarDibujo(
+    indice
+) {
 
-    const dibujos = JSON.parse(
-        localStorage.getItem("dibujos") || "[]"
-    );
+    const dibujos =
+        JSON.parse(
+            localStorage.getItem(
+                "dibujos"
+            ) || "[]"
+        );
 
-    if (confirm("¿Querés eliminar este dibujo?")) {
 
-        dibujos.splice(indice, 1);
+    if (
+        confirm(
+            "¿Querés eliminar este dibujo?"
+        )
+    ) {
+
+        dibujos.splice(
+            indice,
+            1
+        );
+
 
         localStorage.setItem(
             "dibujos",
             JSON.stringify(dibujos)
         );
+
 
         cargarGaleria();
 
@@ -369,101 +706,205 @@ function eliminarDibujo(indice) {
 
 
 // ==============================
-// CUBETA
+// CUBETA DE PINTURA
 // ==============================
 
-function rellenar(x, y, nuevoColor) {
+function rellenar(
+    x,
+    y,
+    nuevoColor
+) {
 
-    const imagen = ctx.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    const imagen =
+        ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
 
-    const datos = imagen.data;
+
+    const datos =
+        imagen.data;
+
 
     const inicio =
         (y * canvas.width + x) * 4;
 
-    const rojo = datos[inicio];
-    const verde = datos[inicio + 1];
-    const azul = datos[inicio + 2];
-    const alfa = datos[inicio + 3];
+
+    const rojo =
+        datos[inicio];
 
 
-    const numero = parseInt(
-        nuevoColor.substring(1),
-        16
-    );
+    const verde =
+        datos[inicio + 1];
+
+
+    const azul =
+        datos[inicio + 2];
+
+
+    const alfa =
+        datos[inicio + 3];
+
+
+    // CONVERTIR COLOR
+
+    const numero =
+        parseInt(
+            nuevoColor.substring(1),
+            16
+        );
+
 
     const nuevoRojo =
         (numero >> 16) & 255;
 
+
     const nuevoVerde =
         (numero >> 8) & 255;
+
 
     const nuevoAzul =
         numero & 255;
 
 
+    // MISMO COLOR
+
     if (
+
         rojo === nuevoRojo &&
+
         verde === nuevoVerde &&
+
         azul === nuevoAzul &&
+
         alfa === 255
+
     ) {
+
         return;
+
     }
 
 
     const pila = [];
 
-    pila.push([x, y]);
+
+    pila.push([
+        x,
+        y
+    ]);
 
 
-    while (pila.length > 0) {
+    while (
+        pila.length > 0
+    ) {
 
-        const punto = pila.pop();
+        const punto =
+            pila.pop();
 
-        const px = punto[0];
-        const py = punto[1];
 
+        const px =
+            punto[0];
+
+
+        const py =
+            punto[1];
+
+
+        // LÍMITES
 
         if (
+
             px < 0 ||
+
             py < 0 ||
+
             px >= canvas.width ||
+
             py >= canvas.height
+
         ) {
+
             continue;
+
         }
 
 
         const posicion =
-            (py * canvas.width + px) * 4;
+            (
+                py *
+                canvas.width +
+                px
+            ) * 4;
 
+
+        // COMPROBAR COLOR
 
         if (
-            datos[posicion] !== rojo ||
-            datos[posicion + 1] !== verde ||
-            datos[posicion + 2] !== azul ||
-            datos[posicion + 3] !== alfa
+
+            datos[posicion] !==
+                rojo ||
+
+            datos[posicion + 1] !==
+                verde ||
+
+            datos[posicion + 2] !==
+                azul ||
+
+            datos[posicion + 3] !==
+                alfa
+
         ) {
+
             continue;
+
         }
 
 
-        datos[posicion] = nuevoRojo;
-        datos[posicion + 1] = nuevoVerde;
-        datos[posicion + 2] = nuevoAzul;
-        datos[posicion + 3] = 255;
+        // CAMBIAR COLOR
+
+        datos[posicion] =
+            nuevoRojo;
 
 
-        pila.push([px + 1, py]);
-        pila.push([px - 1, py]);
-        pila.push([px, py + 1]);
-        pila.push([px, py - 1]);
+        datos[posicion + 1] =
+            nuevoVerde;
+
+
+        datos[posicion + 2] =
+            nuevoAzul;
+
+
+        datos[posicion + 3] =
+            255;
+
+
+        // VECINOS
+
+        pila.push([
+            px + 1,
+            py
+        ]);
+
+
+        pila.push([
+            px - 1,
+            py
+        ]);
+
+
+        pila.push([
+            px,
+            py + 1
+        ]);
+
+
+        pila.push([
+            px,
+            py - 1
+        ]);
 
     }
 
@@ -478,7 +919,7 @@ function rellenar(x, y, nuevoColor) {
 
 
 // ==============================
-// CARGAR GALERÍA AL INICIAR
+// INICIAR GALERÍA
 // ==============================
 
 cargarGaleria();

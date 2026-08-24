@@ -16,12 +16,20 @@
 
         <h1>🎨 Mini Paint</h1>
 
+        <!-- HERRAMIENTAS -->
+
         <div class="barra">
 
             <label>Color:</label>
-            <input type="color" id="color" value="#000000">
+
+            <input
+                type="color"
+                id="color"
+                value="#000000"
+            >
 
             <label>Grosor:</label>
+
             <input
                 type="range"
                 id="tamano"
@@ -30,12 +38,26 @@
                 value="5"
             >
 
-            <button id="lapiz">✏️ Lápiz</button>
-            <button id="goma">🧽 Goma</button>
-            <button id="cubeta">🪣 Cubeta</button>
-            <button id="limpiar">🗑️ Limpiar</button>
+            <button id="lapiz">
+                 Lápiz
+            </button>
+
+            <button id="goma">
+                 Goma
+            </button>
+
+            <button id="cubeta">
+                 Cubeta
+            </button>
+
+            <button id="limpiar">
+                 Limpiar
+            </button>
 
         </div>
+
+
+        <!-- CANVAS -->
 
         <canvas
             id="canvas"
@@ -43,20 +65,23 @@
             height="600">
         </canvas>
 
-        <!-- GUARDAR DIBUJO -->
+
+        <!-- GUARDAR -->
 
         <div class="guardar">
 
             <input
                 type="text"
                 id="nombre"
-                placeholder="Nombre del dibujo">
+                placeholder="Nombre del dibujo"
+            >
 
             <button id="guardar">
-                💾 Guardar dibujo
+                 Guardar dibujo
             </button>
 
         </div>
+
 
         <!-- GALERÍA -->
 
@@ -68,6 +93,7 @@
         </div>
 
     </div>
+
 
     <script src="script.js"></script>
 
