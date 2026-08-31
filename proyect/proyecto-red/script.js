@@ -12,18 +12,17 @@ let dibujando = false;
 let herramienta = "lapiz";
 
 
-// ==============================
+
 // CONFIGURACIÓN
-// ==============================
+
 
 ctx.lineCap = "round";
 
 ctx.lineJoin = "round";
 
 
-// ==============================
-// POSICIÓN DEL MOUSE
-// ==============================
+// POSICIÓN
+
 
 function obtenerPosicion(e) {
 
@@ -48,9 +47,9 @@ function obtenerPosicion(e) {
 }
 
 
-// ==============================
+
 // EMPEZAR A DIBUJAR
-// ==============================
+
 
 canvas.addEventListener(
     "pointerdown",
@@ -97,9 +96,9 @@ canvas.addEventListener(
 );
 
 
-// ==============================
+
 // DIBUJAR
-// ==============================
+
 
 canvas.addEventListener(
     "pointermove",
@@ -150,9 +149,9 @@ canvas.addEventListener(
 );
 
 
-// ==============================
-// TERMINAR DIBUJO
-// ==============================
+
+// TERMINAR
+
 
 canvas.addEventListener(
     "pointerup",
@@ -178,9 +177,9 @@ canvas.addEventListener(
 );
 
 
-// ==============================
+
 // LÁPIZ
-// ==============================
+
 
 document
     .getElementById("lapiz")
@@ -194,9 +193,9 @@ document
     );
 
 
-// ==============================
+
 // GOMA
-// ==============================
+
 
 document
     .getElementById("goma")
@@ -210,9 +209,9 @@ document
     );
 
 
-// ==============================
+
 // CUBETA
-// ==============================
+
 
 document
     .getElementById("cubeta")
@@ -226,9 +225,9 @@ document
     );
 
 
-// ==============================
+
 // LIMPIAR
-// ==============================
+
 
 document
     .getElementById("limpiar")
@@ -255,9 +254,9 @@ document
     );
 
 
-// ==============================
-// GUARDAR DIBUJO
-// ==============================
+
+// GUARDAR
+
 
 document
     .getElementById("guardar")
@@ -297,7 +296,8 @@ document
                 );
 
 
-            // SI ESTAMOS EDITANDO
+            // EDITAR DIBUJO
+
             if (
                 window.dibujoEditando !==
                 undefined
@@ -323,7 +323,8 @@ document
 
             }
 
-            // SI ES UN DIBUJO NUEVO
+            // NUEVO DIBUJO
+
             else {
 
                 dibujos.push({
@@ -359,9 +360,9 @@ document
     );
 
 
-// ==============================
+
 // CARGAR GALERÍA
-// ==============================
+
 
 function cargarGaleria() {
 
@@ -467,9 +468,9 @@ function cargarGaleria() {
 }
 
 
-// ==============================
-// CREAR ESTRELLAS
-// ==============================
+
+// ESTRELLAS
+
 
 function crearEstrellas(
     indice,
@@ -527,9 +528,9 @@ function crearEstrellas(
 }
 
 
-// ==============================
-// VALORAR DIBUJO
-// ==============================
+
+// VALORAR
+
 
 function valorarDibujo(
     indice,
@@ -559,11 +560,13 @@ function valorarDibujo(
 }
 
 
-// ==============================
-// EDITAR DIBUJO
-// ==============================
 
-function editarDibujo(indice) {
+// EDITAR
+
+
+function editarDibujo(
+    indice
+) {
 
     const dibujos =
         JSON.parse(
@@ -628,9 +631,9 @@ function editarDibujo(indice) {
 }
 
 
-// ==============================
+
 // DESCARGAR
-// ==============================
+
 
 function descargarDibujo(
     indice
@@ -664,9 +667,9 @@ function descargarDibujo(
 }
 
 
-// ==============================
+
 // ELIMINAR
-// ==============================
+
 
 function eliminarDibujo(
     indice
@@ -705,9 +708,9 @@ function eliminarDibujo(
 }
 
 
-// ==============================
-// CUBETA DE PINTURA
-// ==============================
+
+// CUBETA
+
 
 function rellenar(
     x,
@@ -748,8 +751,6 @@ function rellenar(
         datos[inicio + 3];
 
 
-    // CONVERTIR COLOR
-
     const numero =
         parseInt(
             nuevoColor.substring(1),
@@ -768,8 +769,6 @@ function rellenar(
     const nuevoAzul =
         numero & 255;
 
-
-    // MISMO COLOR
 
     if (
 
@@ -813,8 +812,6 @@ function rellenar(
             punto[1];
 
 
-        // LÍMITES
-
         if (
 
             px < 0 ||
@@ -840,8 +837,6 @@ function rellenar(
             ) * 4;
 
 
-        // COMPROBAR COLOR
-
         if (
 
             datos[posicion] !==
@@ -863,8 +858,6 @@ function rellenar(
         }
 
 
-        // CAMBIAR COLOR
-
         datos[posicion] =
             nuevoRojo;
 
@@ -880,8 +873,6 @@ function rellenar(
         datos[posicion + 3] =
             255;
 
-
-        // VECINOS
 
         pila.push([
             px + 1,
@@ -918,8 +909,82 @@ function rellenar(
 }
 
 
-// ==============================
+
+// MODO CLARO / OSCURO
+
+
+const botonModo =
+    document.getElementById(
+        "modo"
+    );
+
+
+botonModo.addEventListener(
+    "click",
+    function() {
+
+        document.body.classList.toggle(
+            "modo-claro"
+        );
+
+
+        if (
+            document.body.classList.contains(
+                "modo-claro"
+            )
+        ) {
+
+            botonModo.textContent =
+                "🌙 Modo oscuro";
+
+
+            localStorage.setItem(
+                "modo",
+                "claro"
+            );
+
+        } else {
+
+            botonModo.textContent =
+                "☀️ Modo claro";
+
+
+            localStorage.setItem(
+                "modo",
+                "oscuro"
+            );
+
+        }
+
+    }
+);
+
+
+
+// RECORDAR MODO
+
+
+const modoGuardado =
+    localStorage.getItem(
+        "modo"
+    );
+
+
+if (modoGuardado === "claro") {
+
+    document.body.classList.add(
+        "modo-claro"
+    );
+
+
+    botonModo.textContent =
+        "🌙 Modo oscuro";
+
+}
+
+
+
 // INICIAR GALERÍA
-// ==============================
+
 
 cargarGaleria();
