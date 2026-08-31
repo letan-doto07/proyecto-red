@@ -13,15 +13,148 @@ let herramienta = "lapiz";
 
 
 
-// CONFIGURACIÓN
+// DESHACER Y REHACER
 
 
-ctx.lineCap = "round";
+let historial = [];
 
-ctx.lineJoin = "round";
+let historialFuturo = [];
 
 
-// POSICIÓN
+// Guardar el estado actual
+
+function guardarEstado() {
+
+    historial.push(
+        canvas.toDataURL()
+    );
+
+    // Evita que el historial crezca demasiado
+
+    if (historial.length > 30) {
+
+        historial.shift();
+
+    }
+
+}
+
+
+
+// DESHACER
+
+
+document
+    .getElementById("deshacer")
+    .addEventListener(
+        "click",
+        function() {
+
+            if (historial.length === 0) {
+
+                return;
+
+            }
+
+
+            // Guardamos el estado actual
+            // para poder rehacerlo
+
+            historialFuturo.push(
+                canvas.toDataURL()
+            );
+
+
+            const imagen =
+                new Image();
+
+
+            imagen.onload =
+                function() {
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                    ctx.drawImage(
+                        imagen,
+                        0,
+                        0
+                    );
+
+                };
+
+
+            imagen.src =
+                historial.pop();
+
+        }
+    );
+
+
+
+// REHACER
+
+
+document
+    .getElementById("rehacer")
+    .addEventListener(
+        "click",
+        function() {
+
+            if (
+                historialFuturo.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            // Guardamos el estado actual
+
+            historial.push(
+                canvas.toDataURL()
+            );
+
+
+            const imagen =
+                new Image();
+
+
+            imagen.onload =
+                function() {
+
+                    ctx.clearRect(
+                        0,
+                        0,
+                        canvas.width,
+                        canvas.height
+                    );
+
+
+                    ctx.drawImage(
+                        imagen,
+                        0,
+                        0
+                    );
+
+                };
+
+
+            imagen.src =
+                historialFuturo.pop();
+
+        }
+    );
+
+
+
+// POSICIÓN DEL MOUSE / TÁCTIL
 
 
 function obtenerPosicion(e) {
@@ -61,7 +194,14 @@ canvas.addEventListener(
 
         // CUBETA
 
-        if (herramienta === "cubeta") {
+        if (
+            herramienta === "cubeta"
+        ) {
+
+            guardarEstado();
+
+            historialFuturo = [];
+
 
             rellenar(
                 posicion.x,
@@ -69,12 +209,18 @@ canvas.addEventListener(
                 color.value
             );
 
+
             return;
 
         }
 
 
-        // LÁPIZ / GOMA
+        // Guardar antes de modificar
+
+        guardarEstado();
+
+        historialFuturo = [];
+
 
         dibujando = true;
 
@@ -115,7 +261,9 @@ canvas.addEventListener(
             Number(tamano.value);
 
 
-        if (herramienta === "goma") {
+        if (
+            herramienta === "goma"
+        ) {
 
             ctx.strokeStyle =
                 "#ffffff";
@@ -196,7 +344,6 @@ document
 
 // GOMA
 
-
 document
     .getElementById("goma")
     .addEventListener(
@@ -235,6 +382,11 @@ document
         "click",
         function() {
 
+            guardarEstado();
+
+            historialFuturo = [];
+
+
             if (
                 confirm(
                     "¿Querés limpiar todo el dibujo?"
@@ -255,7 +407,7 @@ document
 
 
 
-// GUARDAR
+// GUARDAR DIBUJO
 
 
 document
@@ -296,7 +448,7 @@ document
                 );
 
 
-            // EDITAR DIBUJO
+            // EDITAR
 
             if (
                 window.dibujoEditando !==
@@ -305,12 +457,14 @@ document
 
                 dibujos[
                     window.dibujoEditando
-                ].nombre = nombre;
+                ].nombre =
+                    nombre;
 
 
                 dibujos[
                     window.dibujoEditando
-                ].imagen = imagen;
+                ].imagen =
+                    imagen;
 
 
                 window.dibujoEditando =
@@ -323,7 +477,7 @@ document
 
             }
 
-            // NUEVO DIBUJO
+            // NUEVO
 
             else {
 
@@ -468,7 +622,6 @@ function cargarGaleria() {
 }
 
 
-
 // ESTRELLAS
 
 
@@ -561,7 +714,7 @@ function valorarDibujo(
 
 
 
-// EDITAR
+// EDITAR DIBUJO
 
 
 function editarDibujo(
@@ -970,7 +1123,9 @@ const modoGuardado =
     );
 
 
-if (modoGuardado === "claro") {
+if (
+    modoGuardado === "claro"
+) {
 
     document.body.classList.add(
         "modo-claro"
@@ -984,7 +1139,7 @@ if (modoGuardado === "claro") {
 
 
 
-// INICIAR GALERÍA
+// INICIAR
 
 
 cargarGaleria();

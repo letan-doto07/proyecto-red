@@ -22,21 +22,11 @@
 
             <label>Color:</label>
 
-            <input
-                type="color"
-                id="color"
-                value="#000000"
-            >
+            <input type="color" id="color" value="#000000">
 
             <label>Grosor:</label>
 
-            <input
-                type="range"
-                id="tamano"
-                min="1"
-                max="40"
-                value="5"
-            >
+            <input type="range" id="tamano" min="1" max="40" value="5">
 
             <button id="lapiz">
                  Lápiz
@@ -48,6 +38,14 @@
 
             <button id="cubeta">
                  Cubeta
+            </button>
+
+            <button id="deshacer">
+                ↩ Deshacer
+            </button>
+
+            <button id="rehacer">
+                ↪ Rehacer
             </button>
 
             <button id="limpiar">
@@ -77,8 +75,7 @@
             <input
                 type="text"
                 id="nombre"
-                placeholder="Nombre del dibujo"
-            >
+                placeholder="Nombre del dibujo">
 
             <button id="guardar">
                  Guardar dibujo
@@ -91,10 +88,7 @@
 
         <h2>🖼️ Galería</h2>
 
-        <div
-            id="galeria"
-            class="galeria">
-        </div>
+        <div id="galeria" class="galeria"></div>
 
     </div>
 
@@ -102,3 +96,5 @@
     <script src="script.js"></script>
 
 </body>
+
+</html>
