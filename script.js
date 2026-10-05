@@ -7,6 +7,8 @@ const color = document.getElementById("color");
 const tamano = document.getElementById("tamano");
 
 
+let dibujos = [];
+
 let dibujando = false;
 
 let herramienta = "lapiz";
@@ -19,6 +21,44 @@ let herramienta = "lapiz";
 let historial = [];
 
 let historialFuturo = [];
+
+
+async function solicitarDibujos(opciones = {}) {
+
+    const respuesta =
+        await fetch("dibujos.php", opciones);
+
+    const datos =
+        await respuesta.json();
+
+    if (!respuesta.ok) {
+
+        throw new Error(
+            datos.error || "No se pudo conectar con los dibujos."
+        );
+
+    }
+
+    return datos;
+
+}
+
+
+function enviarAccionDibujo(datos) {
+
+    return solicitarDibujos({
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(datos)
+
+    });
+
+}
 
 
 // Guardar el estado actual
@@ -414,7 +454,7 @@ document
     .getElementById("guardar")
     .addEventListener(
         "click",
-        function() {
+        async function() {
 
             const nombreInput =
                 document.getElementById(
@@ -439,76 +479,37 @@ document
                     "image/png"
                 );
 
+            const editando =
+                window.dibujoEditando !== undefined;
 
-            const dibujos =
-                JSON.parse(
-                    localStorage.getItem(
-                        "dibujos"
-                    ) || "[]"
-                );
+            const dibujo =
+                editando ? dibujos[window.dibujoEditando] : null;
 
+            try {
 
-            // EDITAR
-
-            if (
-                window.dibujoEditando !==
-                undefined
-            ) {
-
-                dibujos[
-                    window.dibujoEditando
-                ].nombre =
-                    nombre;
-
-
-                dibujos[
-                    window.dibujoEditando
-                ].imagen =
-                    imagen;
-
-
-                window.dibujoEditando =
-                    undefined;
-
-
-                alert(
-                    "¡Dibujo actualizado! 🎨"
-                );
-
-            }
-
-            // NUEVO
-
-            else {
-
-                dibujos.push({
-
+                await enviarAccionDibujo({
+                    accion: editando ? "editar" : "crear",
+                    id: dibujo?.id,
                     nombre: nombre,
-
-                    imagen: imagen,
-
-                    valoracion: 0
-
+                    imagen: imagen
                 });
 
+                window.dibujoEditando = undefined;
+                nombreInput.value = "";
+
+                await cargarGaleria();
 
                 alert(
-                    "¡Dibujo guardado! 🎨"
+                    editando
+                        ? "¡Dibujo actualizado! 🎨"
+                        : "¡Dibujo guardado! 🎨"
                 );
 
+            } catch (error) {
+
+                alert(error.message);
+
             }
-
-
-            localStorage.setItem(
-                "dibujos",
-                JSON.stringify(dibujos)
-            );
-
-
-            nombreInput.value = "";
-
-
-            cargarGaleria();
 
         }
     );
@@ -518,7 +519,7 @@ document
 // CARGAR GALERÍA
 
 
-function cargarGaleria() {
+async function cargarGaleria() {
 
     const galeria =
         document.getElementById(
@@ -526,12 +527,16 @@ function cargarGaleria() {
         );
 
 
-    const dibujos =
-        JSON.parse(
-            localStorage.getItem(
-                "dibujos"
-            ) || "[]"
-        );
+    try {
+
+        dibujos = await solicitarDibujos();
+
+    } catch (error) {
+
+        galeria.innerHTML = "<p>No se pudieron cargar los dibujos.</p>";
+        return;
+
+    }
 
 
     galeria.innerHTML = "";
@@ -619,6 +624,36 @@ function cargarGaleria() {
         }
     );
 
+    filtrarGaleria();
+
+}
+
+
+function filtrarGaleria() {
+
+    const campoBusqueda =
+        document.getElementById("buscar-dibujo");
+
+    if (!campoBusqueda) {
+
+        return;
+
+    }
+
+    const busqueda =
+        campoBusqueda.value.trim().toLocaleLowerCase();
+
+    document
+        .querySelectorAll("#galeria .tarjeta")
+        .forEach(function(tarjeta) {
+
+            const nombre =
+                tarjeta.querySelector("h3").textContent.toLocaleLowerCase();
+
+            tarjeta.hidden = !nombre.includes(busqueda);
+
+        });
+
 }
 
 
@@ -685,30 +720,32 @@ function crearEstrellas(
 // VALORAR
 
 
-function valorarDibujo(
+async function valorarDibujo(
     indice,
     valor
 ) {
 
-    const dibujos =
-        JSON.parse(
-            localStorage.getItem(
-                "dibujos"
-            ) || "[]"
-        );
+    const dibujo = dibujos[indice];
 
+    if (!dibujo) {
+        return;
+    }
 
-    dibujos[indice].valoracion =
-        valor;
+    try {
 
+        await enviarAccionDibujo({
+            accion: "valorar",
+            id: dibujo.id,
+            estrellas: valor
+        });
 
-    localStorage.setItem(
-        "dibujos",
-        JSON.stringify(dibujos)
-    );
+        await cargarGaleria();
 
+    } catch (error) {
 
-    cargarGaleria();
+        alert(error.message);
+
+    }
 
 }
 
@@ -721,16 +758,12 @@ function editarDibujo(
     indice
 ) {
 
-    const dibujos =
-        JSON.parse(
-            localStorage.getItem(
-                "dibujos"
-            ) || "[]"
-        );
-
-
     const dibujo =
         dibujos[indice];
+
+    if (!dibujo) {
+        return;
+    }
 
 
     const imagen =
@@ -792,14 +825,6 @@ function descargarDibujo(
     indice
 ) {
 
-    const dibujos =
-        JSON.parse(
-            localStorage.getItem(
-                "dibujos"
-            ) || "[]"
-        );
-
-
     const enlace =
         document.createElement(
             "a"
@@ -824,17 +849,9 @@ function descargarDibujo(
 // ELIMINAR
 
 
-function eliminarDibujo(
+async function eliminarDibujo(
     indice
 ) {
-
-    const dibujos =
-        JSON.parse(
-            localStorage.getItem(
-                "dibujos"
-            ) || "[]"
-        );
-
 
     if (
         confirm(
@@ -842,19 +859,26 @@ function eliminarDibujo(
         )
     ) {
 
-        dibujos.splice(
-            indice,
-            1
-        );
+        const dibujo = dibujos[indice];
 
+        if (!dibujo) {
+            return;
+        }
 
-        localStorage.setItem(
-            "dibujos",
-            JSON.stringify(dibujos)
-        );
+        try {
 
+            await enviarAccionDibujo({
+                accion: "eliminar",
+                id: dibujo.id
+            });
 
-        cargarGaleria();
+            await cargarGaleria();
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
 
     }
 
@@ -1140,6 +1164,14 @@ if (
 
 
 // INICIAR
+
+
+document
+    .getElementById("buscar-dibujo")
+    .addEventListener(
+        "input",
+        filtrarGaleria
+    );
 
 
 cargarGaleria();

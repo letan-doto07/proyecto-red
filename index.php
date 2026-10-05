@@ -1,9 +1,38 @@
 <?php
+session_start();
+
 $conexion = new mysqli("localhost", "root", "", "drawery");
 if ($conexion->connect_error) {
 die("Error de conexión: " . $conexion->connect_error);
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_SESSION["usuario"]) && !isset($_SESSION["usuario_id"])) {
+    $consultaUsuario = $conexion->prepare(
+        "SELECT id FROM usuarios WHERE usuario = ?"
+    );
+    $consultaUsuario->bind_param("s", $_SESSION["usuario"]);
+    $consultaUsuario->execute();
+    $cuentaActual = $consultaUsuario->get_result()->fetch_assoc();
+
+    if ($cuentaActual) {
+        $_SESSION["usuario_id"] = (int) $cuentaActual["id"];
+    } else {
+        unset($_SESSION["usuario"], $_SESSION["usuario_id"]);
+    }
+}
+if (
+    $_SERVER["REQUEST_METHOD"] == "POST" &&
+    isset($_POST["accion"]) &&
+    $_POST["accion"] === "salir"
+) {
+    $_SESSION = [];
+    session_destroy();
+}
+
+if (
+    $_SERVER["REQUEST_METHOD"] == "POST" &&
+    isset($_POST["accion"]) &&
+    $_POST["accion"] === "registro"
+) {
 $usuario = $_POST["usuario"];
 $contraseña = $_POST["contraseña"];
 $sql = "INSERT INTO usuarios (usuario, contraseña)
@@ -27,7 +56,9 @@ $conexion->query($sql);
 
 <body>
 
+<div class="registro">
 <form method="post">
+<input type="hidden" name="accion" value="registro">
 <p>
 <label>Usuario:</label>
 <input type="text" name="usuario">
@@ -40,12 +71,27 @@ $conexion->query($sql);
 Crear usuario
 </button>
 </form>
+</div>
 <?php
 include 'login.php';
 ?>
     <div class="contenedor">
 
         <h1>drawery</h1>
+
+        <nav class="menu-principal" aria-label="Menú principal">
+            <a href="#galeria">Ver dibujos</a>
+            <input type="search" id="buscar-dibujo" placeholder="Buscar dibujo..." aria-label="Buscar dibujos por nombre">
+            <div class="usuario-menu">
+                <span>Usuario: <?php echo htmlspecialchars($_SESSION["usuario"] ?? "Invitado", ENT_QUOTES, "UTF-8"); ?></span>
+                <?php if (isset($_SESSION["usuario"])): ?>
+                <form method="post">
+                    <input type="hidden" name="accion" value="salir">
+                    <button type="submit">Cerrar sesión</button>
+                </form>
+                <?php endif; ?>
+            </div>
+        </nav>
 
         <!-- BARRA DE HERRAMIENTAS -->
 

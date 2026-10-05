@@ -29,9 +29,218 @@ body {
 
     max-width: 1100px;
 
-    margin: 30px auto;
+    margin: 245px auto 30px;
+
+    padding-bottom: 140px;
 
     text-align: center;
+}
+
+.menu-principal {
+
+    position: fixed;
+
+    right: 16px;
+
+    bottom: 16px;
+
+    z-index: 20;
+
+    width: min(360px, calc(100vw - 32px));
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 14px;
+
+    margin: 0;
+
+    padding: 12px 16px;
+
+    background: #2d2d2d;
+
+    border: 1px solid #444;
+
+    border-radius: 8px;
+
+    text-align: left;
+}
+
+.menu-principal a {
+
+    color: white;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+}
+
+.menu-principal a:hover {
+
+    color: #62c2ff;
+}
+
+.menu-principal > input[type="search"] {
+
+    flex: 1;
+
+    min-width: 120px;
+
+    padding: 9px 10px;
+
+    border: 1px solid #666;
+
+    border-radius: 4px;
+}
+
+.usuario-menu {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    white-space: nowrap;
+}
+
+.usuario-menu form {
+
+    display: inline;
+}
+
+.usuario-menu button {
+
+    padding: 8px 10px;
+
+    font-size: 13px;
+}
+
+.registro {
+
+    position: fixed;
+
+    top: 16px;
+
+    right: 16px;
+
+    z-index: 10;
+
+    width: 230px;
+
+    padding: 14px;
+
+    background: #2d2d2d;
+
+    border: 1px solid #444;
+
+    border-radius: 8px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+    text-align: left;
+}
+
+.registro p {
+
+    margin-bottom: 10px;
+}
+
+.registro label,
+.registro input {
+
+    display: block;
+
+    width: 100%;
+}
+
+.registro input {
+
+    margin-top: 4px;
+
+    padding: 8px;
+
+    border: 1px solid #666;
+
+    border-radius: 4px;
+}
+
+.registro button {
+
+    width: 100%;
+}
+
+.inicio-sesion {
+
+    position: fixed;
+
+    top: 16px;
+
+    left: 16px;
+
+    z-index: 10;
+
+    width: 230px;
+
+    padding: 14px;
+
+    background: #2d2d2d;
+
+    border: 1px solid #444;
+
+    border-radius: 8px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+    text-align: left;
+}
+
+.inicio-sesion h2 {
+
+    margin: 0 0 12px;
+
+    font-size: 18px;
+}
+
+.inicio-sesion p {
+
+    margin-bottom: 10px;
+}
+
+.inicio-sesion label,
+.inicio-sesion input {
+
+    display: block;
+
+    width: 100%;
+}
+
+.inicio-sesion input {
+
+    margin-top: 4px;
+
+    padding: 8px;
+
+    border: 1px solid #666;
+
+    border-radius: 4px;
+}
+
+.inicio-sesion button {
+
+    width: 100%;
+}
+
+.mensaje-login {
+
+    margin-top: 10px;
 }
 
 
@@ -338,6 +547,42 @@ body.modo-claro .valoracion span:first-child {
 ========================= */
 
 @media (max-width: 600px) {
+
+    .menu-principal {
+
+        right: 8px;
+
+        bottom: 8px;
+
+        width: min(360px, calc(100vw - 16px));
+
+        text-align: left;
+    }
+
+    .usuario-menu {
+
+        justify-content: space-between;
+
+        width: 100%;
+    }
+
+    .inicio-sesion {
+
+        position: static;
+
+        width: min(100% - 20px, 320px);
+
+        margin: 15px auto;
+    }
+
+    .registro {
+
+        position: static;
+
+        width: min(100% - 20px, 320px);
+
+        margin: 15px auto;
+    }
 
     .contenedor {
 
