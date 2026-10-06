@@ -13,6 +13,8 @@ let dibujando = false;
 
 let herramienta = "lapiz";
 
+let galeriaActual = "mis";
+
 
 
 // DESHACER Y REHACER
@@ -23,10 +25,16 @@ let historial = [];
 let historialFuturo = [];
 
 
-async function solicitarDibujos(opciones = {}) {
+async function solicitarDibujos(opciones = {}, modo = galeriaActual) {
+
+    const url = new URL("dibujos.php", window.location.href);
+
+    if (modo === "todos") {
+        url.searchParams.set("modo", "all");
+    }
 
     const respuesta =
-        await fetch("dibujos.php", opciones);
+        await fetch(url.toString(), opciones);
 
     const datos =
         await respuesta.json();
@@ -56,7 +64,7 @@ function enviarAccionDibujo(datos) {
 
         body: JSON.stringify(datos)
 
-    });
+    }, galeriaActual);
 
 }
 
@@ -519,7 +527,9 @@ document
 // CARGAR GALERÍA
 
 
-async function cargarGaleria() {
+async function cargarGaleria(modo = galeriaActual) {
+
+    galeriaActual = modo;
 
     const galeria =
         document.getElementById(
@@ -529,7 +539,7 @@ async function cargarGaleria() {
 
     try {
 
-        dibujos = await solicitarDibujos();
+        dibujos = await solicitarDibujos({}, modo);
 
     } catch (error) {
 
@@ -564,6 +574,17 @@ async function cargarGaleria() {
             tarjeta.className =
                 "tarjeta";
 
+            const autorHtml = galeriaActual === "todos"
+                ? `<p class="autor">Por: ${dibujo.usuario || "Usuario"}</p>`
+                : "";
+
+            const botonesHtml = galeriaActual === "todos"
+                ? `<button onclick="descargarDibujo(${indice})">📥 Descargar</button>`
+                : `
+                    <button onclick="editarDibujo(${indice})">✏️ Editar</button>
+                    <button onclick="descargarDibujo(${indice})">📥 Descargar</button>
+                    <button onclick="eliminarDibujo(${indice})">🗑️ Eliminar</button>
+                `;
 
             tarjeta.innerHTML = `
 
@@ -575,6 +596,7 @@ async function cargarGaleria() {
                     ${dibujo.nombre}
                 </h3>
 
+                ${autorHtml}
 
                 <div class="valoracion">
 
@@ -586,33 +608,19 @@ async function cargarGaleria() {
 
                         ${crearEstrellas(
                             indice,
-                            dibujo.valoracion || 0
+                            dibujo.valoracion || 0,
+                            dibujo.mi_valoracion || 0
                         )}
 
                     </div>
 
+                    <small class="promedio-valoracion">
+                        ${Number(dibujo.valoracion || 0).toFixed(1)} / 5
+                    </small>
+
                 </div>
 
-
-                <button
-                    onclick="editarDibujo(${indice})"
-                >
-                    ✏️ Editar
-                </button>
-
-
-                <button
-                    onclick="descargarDibujo(${indice})"
-                >
-                    📥 Descargar
-                </button>
-
-
-                <button
-                    onclick="eliminarDibujo(${indice})"
-                >
-                    🗑️ Eliminar
-                </button>
+                ${botonesHtml}
 
             `;
 
@@ -662,9 +670,11 @@ function filtrarGaleria() {
 
 function crearEstrellas(
     indice,
-    valoracion
+    valoracion,
+    miValoracion = 0
 ) {
 
+    const valor = Math.round(Number(miValoracion) || Number(valoracion) || 0);
     let resultado = "";
 
 
@@ -674,7 +684,7 @@ function crearEstrellas(
         i++
     ) {
 
-        if (i <= valoracion) {
+        if (i <= valor) {
 
             resultado += `
 
@@ -731,6 +741,12 @@ async function valorarDibujo(
         return;
     }
 
+    const usuarioActual = Number(document.body.dataset.usuarioId || 0);
+    if (!usuarioActual) {
+        alert("Iniciá sesión para valorar dibujos.");
+        return;
+    }
+
     try {
 
         await enviarAccionDibujo({
@@ -739,7 +755,7 @@ async function valorarDibujo(
             estrellas: valor
         });
 
-        await cargarGaleria();
+        await cargarGaleria(galeriaActual);
 
     } catch (error) {
 
@@ -1166,12 +1182,104 @@ if (
 // INICIAR
 
 
-document
-    .getElementById("buscar-dibujo")
-    .addEventListener(
+function activarBotonGaleria(tipo) {
+
+    const botonMisDibujos =
+        document.getElementById("ver-mis-dibujos");
+
+    const botonOtrosDibujos =
+        document.getElementById("ver-otros-dibujos");
+
+    if (!botonMisDibujos || !botonOtrosDibujos) {
+        return;
+    }
+
+    const activo = tipo === "todos";
+
+    botonMisDibujos.classList.toggle("activo", !activo);
+    botonOtrosDibujos.classList.toggle("activo", activo);
+
+}
+
+
+const botonMisDibujos = document.getElementById("ver-mis-dibujos");
+const botonOtrosDibujos = document.getElementById("ver-otros-dibujos");
+const buscaDibujo = document.getElementById("buscar-dibujo");
+
+if (botonMisDibujos && botonOtrosDibujos) {
+    botonMisDibujos.addEventListener(
+        "click",
+        function() {
+            activarBotonGaleria("mis");
+            cargarGaleria("mis");
+        }
+    );
+
+    botonOtrosDibujos.addEventListener(
+        "click",
+        function() {
+            activarBotonGaleria("todos");
+            cargarGaleria("todos");
+        }
+    );
+}
+
+if (buscaDibujo) {
+    buscaDibujo.addEventListener(
         "input",
         filtrarGaleria
     );
+}
 
 
-cargarGaleria();
+if (window.location.pathname.toLowerCase().endsWith("explorar.php")) {
+    cargarGaleria("todos");
+} else {
+    cargarGaleria("mis");
+}
+
+const menuToggle = document.getElementById("menu-acciones-toggle");
+const menuPanel = document.getElementById("menu-acciones");
+
+if (menuToggle && menuPanel) {
+    menuToggle.addEventListener("click", function () {
+        const abrir = !menuPanel.classList.contains("active");
+        menuPanel.classList.toggle("active", abrir);
+        menuToggle.setAttribute("aria-expanded", String(abrir));
+    });
+
+    const crearUsuarioBtn = document.getElementById("menu-crear-usuario");
+    if (crearUsuarioBtn) {
+        crearUsuarioBtn.addEventListener("click", function () {
+            window.location.href = "registro.php";
+        });
+    }
+
+    const iniciarSesionBtn = document.getElementById("menu-iniciar-sesion");
+    if (iniciarSesionBtn) {
+        iniciarSesionBtn.addEventListener("click", function () {
+            window.location.href = "login.php";
+        });
+    }
+
+    const miUsuarioBtn = document.getElementById("menu-mi-usuario");
+    if (miUsuarioBtn) {
+        miUsuarioBtn.addEventListener("click", function () {
+            window.location.href = "perfil.php";
+        });
+    }
+
+    const misDibujosBtn = document.getElementById("menu-mis-dibujos");
+    if (misDibujosBtn) {
+        misDibujosBtn.addEventListener("click", function () {
+            window.location.href = "index.php#galeria";
+        });
+    }
+
+    const otrosDibujosBtn = document.getElementById("menu-otros-dibujos");
+    if (otrosDibujosBtn) {
+        otrosDibujosBtn.addEventListener("click", function () {
+            window.location.href = "explorar.php";
+        });
+    }
+}

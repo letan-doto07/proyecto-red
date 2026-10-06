@@ -10,12 +10,13 @@ function responder($datos, $estado = 200)
 }
 
 $usuarioId = (int) ($_SESSION["usuario_id"] ?? 0);
+$modo = $_GET["modo"] ?? "mis";
 
-if ($_SERVER["REQUEST_METHOD"] === "GET" && $usuarioId === 0) {
+if ($_SERVER["REQUEST_METHOD"] === "GET" && $usuarioId === 0 && $modo !== "all") {
     responder([]);
 }
 
-if ($usuarioId === 0) {
+if ($_SERVER["REQUEST_METHOD"] !== "GET" && $usuarioId === 0) {
     responder(["error" => "Inicia sesión para guardar tus dibujos."], 401);
 }
 
@@ -24,15 +25,35 @@ try {
     $conexion->set_charset("utf8mb4");
 
     if ($_SERVER["REQUEST_METHOD"] === "GET") {
-        $consulta = $conexion->prepare(
-            "SELECT d.id, d.nombre, d.imagen, COALESCE(v.estrellas, 0) AS valoracion
-            FROM dibujos d
-            LEFT JOIN valoraciones v
-                ON v.dibujo_id = d.id AND v.usuario_id = ?
-            WHERE d.usuario_id = ?
-            ORDER BY d.fecha_creacion DESC, d.id DESC"
-        );
-        $consulta->bind_param("ii", $usuarioId, $usuarioId);
+        if ($modo === "all") {
+            $consulta = $conexion->prepare(
+                "SELECT d.id, d.nombre, d.imagen, u.usuario,
+                        COALESCE(AVG(v1.estrellas), 0) AS valoracion,
+                        COALESCE(MAX(CASE WHEN v2.usuario_id = ? THEN v2.estrellas END), 0) AS mi_valoracion
+                FROM dibujos d
+                INNER JOIN usuarios u ON u.id = d.usuario_id
+                LEFT JOIN valoraciones v1 ON v1.dibujo_id = d.id
+                LEFT JOIN valoraciones v2 ON v2.dibujo_id = d.id AND v2.usuario_id = ?
+                WHERE d.usuario_id != ?
+                GROUP BY d.id, d.nombre, d.imagen, u.usuario
+                ORDER BY d.fecha_creacion DESC, d.id DESC"
+            );
+            $consulta->bind_param("iii", $usuarioId, $usuarioId, $usuarioId);
+        } else {
+            $consulta = $conexion->prepare(
+                "SELECT d.id, d.nombre, d.imagen,
+                        COALESCE(AVG(v1.estrellas), 0) AS valoracion,
+                        COALESCE(MAX(CASE WHEN v2.usuario_id = ? THEN v2.estrellas END), 0) AS mi_valoracion
+                FROM dibujos d
+                LEFT JOIN valoraciones v1 ON v1.dibujo_id = d.id
+                LEFT JOIN valoraciones v2 ON v2.dibujo_id = d.id AND v2.usuario_id = ?
+                WHERE d.usuario_id = ?
+                GROUP BY d.id, d.nombre, d.imagen
+                ORDER BY d.fecha_creacion DESC, d.id DESC"
+            );
+            $consulta->bind_param("iii", $usuarioId, $usuarioId, $usuarioId);
+        }
+
         $consulta->execute();
         $dibujos = $consulta->get_result()->fetch_all(MYSQLI_ASSOC);
         responder($dibujos);
@@ -87,9 +108,9 @@ try {
         }
 
         $verificar = $conexion->prepare(
-            "SELECT id FROM dibujos WHERE id = ? AND usuario_id = ?"
+            "SELECT id FROM dibujos WHERE id = ?"
         );
-        $verificar->bind_param("ii", $dibujoId, $usuarioId);
+        $verificar->bind_param("i", $dibujoId);
         $verificar->execute();
 
         if ($verificar->get_result()->num_rows === 0) {

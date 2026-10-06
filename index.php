@@ -28,16 +28,35 @@ if (
     session_destroy();
 }
 
+$errorRegistro = "";
+
 if (
     $_SERVER["REQUEST_METHOD"] == "POST" &&
     isset($_POST["accion"]) &&
     $_POST["accion"] === "registro"
 ) {
-$usuario = $_POST["usuario"];
-$contraseña = $_POST["contraseña"];
-$sql = "INSERT INTO usuarios (usuario, contraseña)
-VALUES ('$usuario', '$contraseña')";
-$conexion->query($sql);
+    $usuario = trim($_POST["usuario"] ?? "");
+    $contraseña = $_POST["contraseña"] ?? "";
+
+    if (strlen($contraseña) < 4 || strlen($contraseña) > 12) {
+        $errorRegistro = "La contraseña debe tener entre 4 y 12 caracteres.";
+    } elseif ($usuario === "") {
+        $errorRegistro = "El nombre de usuario no puede estar vacío.";
+    } else {
+        $consultaExistente = $conexion->prepare("SELECT id FROM usuarios WHERE usuario = ?");
+        $consultaExistente->bind_param("s", $usuario);
+        $consultaExistente->execute();
+        $resultadoExistente = $consultaExistente->get_result();
+
+        if ($resultadoExistente->num_rows > 0) {
+            $errorRegistro = "Ese nombre de usuario ya está elegido. Prueba otro.";
+        } else {
+            $sql = "INSERT INTO usuarios (usuario, contraseña) VALUES (?, ?)";
+            $stmt = $conexion->prepare($sql);
+            $stmt->bind_param("ss", $usuario, $contraseña);
+            $stmt->execute();
+        }
+    }
 }
 ?>
 
@@ -54,36 +73,28 @@ $conexion->query($sql);
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body data-usuario-id="<?php echo (int) ($_SESSION["usuario_id"] ?? 0); ?>">
 
-<div class="registro">
-<form method="post">
-<input type="hidden" name="accion" value="registro">
-<p>
-<label>Usuario:</label>
-<input type="text" name="usuario">
-</p>
-<p>
-<label>Contraseña:</label>
-<input type="password" name="contraseña">
-</p>
-<button type="submit">
-Crear usuario
-</button>
-</form>
-</div>
-<?php
-include 'login.php';
-?>
+    <div class="menu-acciones" aria-label="Menú de acciones">
+        <button id="menu-acciones-toggle" class="menu-acciones-toggle" type="button" aria-expanded="false">☰</button>
+        <div id="menu-acciones" class="menu-acciones-panel">
+            <button id="menu-crear-usuario" type="button">Crear usuario</button>
+            <button id="menu-iniciar-sesion" type="button">Iniciar sesión</button>
+            <button id="menu-mi-usuario" type="button">Ver mi usuario</button>
+            <button id="menu-mis-dibujos" type="button">Ver mis dibujos</button>
+            <button id="menu-otros-dibujos" type="button">Ver dibujos de otros</button>
+        </div>
+    </div>
     <div class="contenedor">
 
         <h1>drawery</h1>
 
         <nav class="menu-principal" aria-label="Menú principal">
-            <a href="#galeria">Ver dibujos</a>
+            <a href="index.php" class="btn-galeria activo" id="ver-mis-dibujos">Mis dibujos</a>
+            <a href="explorar.php" class="btn-galeria" id="ver-otros-dibujos">Ver dibujos de otros</a>
             <input type="search" id="buscar-dibujo" placeholder="Buscar dibujo..." aria-label="Buscar dibujos por nombre">
             <div class="usuario-menu">
-                <span>Usuario: <?php echo htmlspecialchars($_SESSION["usuario"] ?? "Invitado", ENT_QUOTES, "UTF-8"); ?></span>
+                <span id="mi-usuario">Usuario: <?php echo htmlspecialchars($_SESSION["usuario"] ?? "Invitado", ENT_QUOTES, "UTF-8"); ?></span>
                 <?php if (isset($_SESSION["usuario"])): ?>
                 <form method="post">
                     <input type="hidden" name="accion" value="salir">

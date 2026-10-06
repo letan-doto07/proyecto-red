@@ -87,6 +87,187 @@ body {
     color: #62c2ff;
 }
 
+.menu-acciones {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.menu-acciones-toggle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.menu-acciones-panel {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 220px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.menu-acciones-panel.active {
+    display: flex;
+}
+
+.menu-acciones-panel button {
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+}
+
+.pagina-auth {
+    width: min(420px, calc(100% - 24px));
+    margin: 80px auto;
+    padding: 24px 20px;
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
+
+.pagina-auth h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.pagina-auth label,
+.pagina-auth input {
+    display: block;
+    width: 100%;
+}
+
+.pagina-auth input {
+    margin-top: 6px;
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid #666;
+    border-radius: 8px;
+}
+
+.pagina-auth button {
+    width: 100%;
+}
+
+.link-auth {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.link-auth a {
+    color: #62c2ff;
+    text-decoration: none;
+}
+
+.perfil-wrapper {
+    width: min(1100px, calc(100% - 24px));
+    margin: 40px auto 80px;
+}
+
+.perfil-card {
+    background: #2d2d2d;
+    border: 1px solid #444;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.28);
+}
+
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.perfil-foto {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #0099ff;
+    background: #1f1f1f;
+}
+
+.perfil-info {
+    flex: 1;
+    min-width: 220px;
+}
+
+.perfil-info h1 {
+    margin: 0 0 16px;
+    font-size: 2.2rem;
+}
+
+#form-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+#form-perfil input[type="file"] {
+    display: none;
+}
+
+.boton-foto {
+    background: #0099ff;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.mensaje-perfil {
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+.mensaje-perfil.ok {
+    color: #7ef29a;
+}
+
+.mensaje-perfil.error {
+    color: #ff8a8a;
+}
+
+.perfil-dibujos {
+    margin-top: 20px;
+}
+
+.perfil-galeria {
+    margin-top: 20px;
+}
+
+.btn-descarga {
+    display: inline-block;
+    margin-top: 8px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.vacio-perfil {
+    color: #ccc;
+    margin-top: 12px;
+}
+
 .menu-principal > input[type="search"] {
 
     flex: 1;
@@ -473,6 +654,13 @@ canvas {
     color: #ddd;
 }
 
+.promedio-valoracion {
+    display: block;
+    margin-top: 6px;
+    color: #ffd76a;
+    font-weight: bold;
+    font-size: 12px;
+}
 
 .estrellas {
 
