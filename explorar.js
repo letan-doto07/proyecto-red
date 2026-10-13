@@ -77,7 +77,7 @@ async function cargarGaleriaPublica() {
             tarjeta.innerHTML = `
                 <img src="${dibujo.imagen}" alt="${dibujo.nombre}">
                 <h3>${dibujo.nombre}</h3>
-                <p class="autor">Por: ${dibujo.usuario || "Usuario"}</p>
+                <p class="autor">Por: <a class="perfil-autor"></a></p>
                 <div class="valoracion">
                     <span>Valoración:</span>
                     <div class="estrellas">${crearEstrellasPublicas(dibujo.valoracion || 0, dibujo.mi_valoracion || 0, dibujo.id)}</div>
@@ -85,6 +85,10 @@ async function cargarGaleriaPublica() {
                 </div>
                 <button onclick="descargarDibujoPublico('${dibujo.id}', '${dibujo.nombre}', '${dibujo.imagen}')">📥 Descargar</button>
             `;
+
+            const enlacePerfil = tarjeta.querySelector(".perfil-autor");
+            enlacePerfil.href = `perfil-publico.php?id=${Number(dibujo.usuario_id)}`;
+            enlacePerfil.textContent = dibujo.usuario || "Usuario";
 
             galeria.appendChild(tarjeta);
         });

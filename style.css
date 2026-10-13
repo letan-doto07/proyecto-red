@@ -255,6 +255,16 @@ body {
     margin-top: 20px;
 }
 
+.perfil-autor {
+    color: #62c2ff;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.perfil-autor:hover {
+    text-decoration: underline;
+}
+
 .btn-descarga {
     display: inline-block;
     margin-top: 8px;
@@ -536,6 +546,29 @@ canvas {
     touch-action: none;
 }
 
+.lienzo-contenedor {
+    position: relative;
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin: 0 auto;
+    line-height: 0;
+}
+
+.lienzo-contenedor #canvas {
+    display: block;
+}
+
+.lienzo-seleccion {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    border: 0;
+    background: transparent;
+    pointer-events: none;
+}
 
 /* =========================
    GUARDAR

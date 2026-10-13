@@ -128,12 +128,27 @@ if (
                  Cubeta
             </button>
 
+            <button id="seleccionar" type="button" title="Seleccionar, mover o redimensionar una parte del dibujo">
+                Seleccionar
+            </button>
+
+            <button id="agrandar-seleccion" type="button" title="Agrandar la selección">Agrandar</button>
+            <button id="achicar-seleccion" type="button" title="Achicar la selección">Achicar</button>
+
             <button id="deshacer">
                 ↩ Deshacer
             </button>
 
             <button id="rehacer">
                 ↪ Rehacer
+            </button>
+
+            <button id="copiar-imagen" type="button" title="Copiar el lienzo como imagen">
+                Copiar imagen
+            </button>
+
+            <button id="pegar-imagen" type="button" title="Pegar una imagen del portapapeles en el lienzo">
+                Pegar imagen
             </button>
 
             <button id="limpiar">
@@ -152,7 +167,9 @@ if (
         <canvas
             id="canvas"
             width="1000"
-            height="600">
+            height="600"
+            tabindex="0"
+            aria-label="Lienzo de dibujo. Haz clic aquí para usar Ctrl+C y Ctrl+V con imágenes.">
         </canvas>
 
 

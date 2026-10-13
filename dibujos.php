@@ -27,7 +27,7 @@ try {
     if ($_SERVER["REQUEST_METHOD"] === "GET") {
         if ($modo === "all") {
             $consulta = $conexion->prepare(
-                "SELECT d.id, d.nombre, d.imagen, u.usuario,
+                "SELECT d.id, d.usuario_id, d.nombre, d.imagen, u.usuario,
                         COALESCE(AVG(v1.estrellas), 0) AS valoracion,
                         COALESCE(MAX(CASE WHEN v2.usuario_id = ? THEN v2.estrellas END), 0) AS mi_valoracion
                 FROM dibujos d
@@ -35,7 +35,7 @@ try {
                 LEFT JOIN valoraciones v1 ON v1.dibujo_id = d.id
                 LEFT JOIN valoraciones v2 ON v2.dibujo_id = d.id AND v2.usuario_id = ?
                 WHERE d.usuario_id != ?
-                GROUP BY d.id, d.nombre, d.imagen, u.usuario
+                GROUP BY d.id, d.usuario_id, d.nombre, d.imagen, u.usuario
                 ORDER BY d.fecha_creacion DESC, d.id DESC"
             );
             $consulta->bind_param("iii", $usuarioId, $usuarioId, $usuarioId);
