@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$conexion = new mysqli("localhost", "root", "", "drawery");
+$conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
 if ($conexion->connect_error) {
 die("Error de conexión: " . $conexion->connect_error);
 }
