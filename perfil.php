@@ -6,7 +6,7 @@ if (!isset($_SESSION["usuario_id"])) {
     exit;
 }
 
-$conexion = new mysqli("localhost", "root", "", "drawery");
+$conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
 $conexion->set_charset("utf8mb4");
 
 $userId = (int) $_SESSION["usuario_id"];

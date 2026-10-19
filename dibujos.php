@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET" && $usuarioId === 0) {
 }
 
 try {
-    $conexion = new mysqli("localhost", "root", "", "drawery");
+    $conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
     $conexion->set_charset("utf8mb4");
 
     if ($_SERVER["REQUEST_METHOD"] === "GET") {

@@ -10,7 +10,7 @@ if (!$usuarioId) {
     $usuario = null;
     $dibujos = [];
 } else {
-    $conexion = new mysqli("localhost", "root", "", "drawery");
+    $conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
     $conexion->set_charset("utf8mb4");
 
     $consultaUsuario = $conexion->prepare(

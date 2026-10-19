@@ -8,7 +8,7 @@ if (
     isset($_POST["accion"]) &&
     $_POST["accion"] === "login"
 ) {
-    $conexionLogin = new mysqli("localhost", "root", "", "drawery");
+    $conexionLogin = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
 
     if ($conexionLogin->connect_error) {
         $mensaje = "Error de conexión: " . $conexionLogin->connect_error;

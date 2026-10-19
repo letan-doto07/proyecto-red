@@ -8,7 +8,7 @@ if (
     isset($_POST["accion"]) &&
     $_POST["accion"] === "registro"
 ) {
-    $conexion = new mysqli("localhost", "root", "", "drawery");
+    $conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
 
     if ($conexion->connect_error) {
         $errorRegistro = "Error de conexión: " . $conexion->connect_error;
