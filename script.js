@@ -45,6 +45,11 @@ function actualizarCursor() {
         return;
     }
 
+    if (herramienta === "cubeta" || herramienta === "texto") {
+        canvas.style.cursor = "crosshair";
+        return;
+    }
+
     const escala = canvas.clientWidth / canvas.width;
     const tamanoCursor = Math.max(
         4,
@@ -441,6 +446,24 @@ canvas.addEventListener(
             return;
         }
 
+        if (herramienta === "texto") {
+            const texto = prompt("Escribe el texto para agregar al dibujo:");
+            if (!texto) return;
+
+            const tamanoTexto = Math.max(12, Number(tamano.value) * 4);
+            guardarEstado();
+            historialFuturo = [];
+            ctx.save();
+            ctx.fillStyle = color.value;
+            ctx.font = `${tamanoTexto}px Arial, sans-serif`;
+            ctx.textBaseline = "top";
+            texto.split("\n").forEach((linea, indice) => {
+                ctx.fillText(linea, posicion.x, posicion.y + indice * tamanoTexto * 1.2);
+            });
+            ctx.restore();
+            return;
+        }
+
 
         // CUBETA
 
@@ -704,6 +727,13 @@ document
 
         }
     );
+
+
+document.getElementById("texto").addEventListener("click", function() {
+    confirmarSeleccion();
+    herramienta = "texto";
+    actualizarCursor();
+});
 
 
 document.getElementById("seleccionar").addEventListener("click", function() {
@@ -1561,6 +1591,28 @@ function colocarImagenEnLienzo(imagen) {
 }
 
 
+function cargarImagenArchivo(archivo) {
+    if (typeof createImageBitmap === "function") {
+        return createImageBitmap(archivo);
+    }
+
+    return new Promise((resolver, rechazar) => {
+        const imagen = new Image();
+        const url = URL.createObjectURL(archivo);
+
+        imagen.onload = function() {
+            URL.revokeObjectURL(url);
+            resolver(imagen);
+        };
+        imagen.onerror = function() {
+            URL.revokeObjectURL(url);
+            rechazar(new Error("No se pudo cargar la imagen."));
+        };
+        imagen.src = url;
+    });
+}
+
+
 async function pegarImagenDelPortapapeles() {
 
     if (!navigator.clipboard?.read || typeof createImageBitmap === "undefined") {
@@ -1590,6 +1642,26 @@ async function pegarImagenDelPortapapeles() {
 
 document.getElementById("copiar-imagen").addEventListener("click", copiarLienzo);
 document.getElementById("pegar-imagen").addEventListener("click", pegarImagenDelPortapapeles);
+
+const selectorImagen = document.getElementById("archivo-imagen");
+document.getElementById("abrir-imagen").addEventListener("click", function() {
+    selectorImagen.click();
+});
+
+selectorImagen.addEventListener("change", async function() {
+    const archivo = selectorImagen.files[0];
+    if (!archivo) return;
+
+    try {
+        const bitmap = await cargarImagenArchivo(archivo);
+        colocarImagenEnLienzo(bitmap);
+        bitmap.close?.();
+    } catch (error) {
+        alert("No se pudo abrir esa imagen.");
+    }
+
+    selectorImagen.value = "";
+});
 
 canvas.addEventListener("copy", function(e) {
     e.preventDefault();

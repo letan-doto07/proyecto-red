@@ -128,6 +128,10 @@ if (
                  Cubeta
             </button>
 
+            <button id="texto" type="button" title="Escribir texto en el lienzo">
+                Texto
+            </button>
+
             <button id="seleccionar" type="button" title="Seleccionar, mover o redimensionar una parte del dibujo">
                 Seleccionar
             </button>
@@ -150,6 +154,11 @@ if (
             <button id="pegar-imagen" type="button" title="Pegar una imagen del portapapeles en el lienzo">
                 Pegar imagen
             </button>
+
+            <button id="abrir-imagen" type="button" title="Abrir una imagen guardada en tu computadora">
+                Abrir imagen
+            </button>
+            <input id="archivo-imagen" type="file" accept="image/*" hidden>
 
             <button id="limpiar">
                  Limpiar
@@ -199,7 +208,7 @@ if (
     </div>
 
 
-    <script src="script.js"></script>
+    <script src="script.js?v=<?php echo filemtime(__DIR__ . '/script.js'); ?>"></script>
 
 </body>
 

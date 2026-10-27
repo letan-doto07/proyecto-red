@@ -70,6 +70,9 @@ if (
             <p class="mensaje-login"><?php echo htmlspecialchars($mensaje, ENT_QUOTES, "UTF-8"); ?></p>
         <?php endif; ?>
         <p class="link-auth">
+            <a href="olvide-contrasena.php">Olvidé mi contraseña</a>
+        </p>
+        <p class="link-auth">
             <a href="registro.php">Crear una cuenta</a>
         </p>
         <p class="link-auth">
