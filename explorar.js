@@ -104,7 +104,16 @@ async function cargarGaleriaPublica() {
             });
 
             const listaComentarios = tarjeta.querySelector(".lista-comentarios");
-            (dibujo.comentarios || []).forEach(function (comentario) {
+            const comentarios = dibujo.comentarios || [];
+
+            if (comentarios.length === 0) {
+                const vacio = document.createElement("li");
+                vacio.className = "sin-comentarios";
+                vacio.textContent = "Todavía no hay comentarios.";
+                listaComentarios.appendChild(vacio);
+            }
+
+            comentarios.forEach(function (comentario) {
                 const elemento = document.createElement("li");
                 const autor = document.createElement("a");
                 const texto = document.createElement("p");
