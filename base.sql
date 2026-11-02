@@ -82,3 +82,24 @@ CREATE TABLE me_gusta (
     -- Un usuario no puede dar dos likes
     UNIQUE (dibujo_id, usuario_id)
 );
+
+
+-- =========================================
+-- COMENTARIOS
+-- =========================================
+
+CREATE TABLE comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dibujo_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    comentario VARCHAR(500) NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (dibujo_id)
+        REFERENCES dibujos(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
+);

@@ -23,6 +23,17 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET" && $usuarioId === 0) {
 try {
     $conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "drawery");
     $conexion->set_charset("utf8mb4");
+    $conexion->query(
+        "CREATE TABLE IF NOT EXISTS comentarios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            dibujo_id INT NOT NULL,
+            usuario_id INT NOT NULL,
+            comentario VARCHAR(500) NOT NULL,
+            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (dibujo_id) REFERENCES dibujos(id) ON DELETE CASCADE,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
 
     if ($_SERVER["REQUEST_METHOD"] === "GET") {
         if ($modo === "all") {
@@ -56,6 +67,32 @@ try {
 
         $consulta->execute();
         $dibujos = $consulta->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        if ($modo === "all" && count($dibujos) > 0) {
+            $idsDibujos = array_map(
+                static fn($dibujo) => (int) $dibujo["id"],
+                $dibujos
+            );
+            $comentarios = $conexion->query(
+                "SELECT c.dibujo_id, c.comentario, c.fecha_creacion,
+                        c.usuario_id, u.usuario
+                FROM comentarios c
+                INNER JOIN usuarios u ON u.id = c.usuario_id
+                WHERE c.dibujo_id IN (" . implode(",", $idsDibujos) . ")
+                ORDER BY c.fecha_creacion ASC, c.id ASC"
+            )->fetch_all(MYSQLI_ASSOC);
+            $comentariosPorDibujo = [];
+
+            foreach ($comentarios as $comentario) {
+                $comentariosPorDibujo[(int) $comentario["dibujo_id"]][] = $comentario;
+            }
+
+            foreach ($dibujos as &$dibujo) {
+                $dibujo["comentarios"] = $comentariosPorDibujo[(int) $dibujo["id"]] ?? [];
+            }
+            unset($dibujo);
+        }
+
         responder($dibujos);
     }
 
@@ -123,6 +160,32 @@ try {
             ON DUPLICATE KEY UPDATE estrellas = VALUES(estrellas)"
         );
         $consulta->bind_param("iii", $dibujoId, $usuarioId, $estrellas);
+        $consulta->execute();
+
+        responder(["ok" => true]);
+    }
+
+    if ($accion === "comentar") {
+        $dibujoId = (int) ($datos["id"] ?? 0);
+        $comentario = trim($datos["comentario"] ?? "");
+
+        if ($comentario === "" || mb_strlen($comentario) > 500) {
+            responder(["error" => "El comentario debe tener entre 1 y 500 caracteres."], 400);
+        }
+
+        $verificar = $conexion->prepare("SELECT id FROM dibujos WHERE id = ?");
+        $verificar->bind_param("i", $dibujoId);
+        $verificar->execute();
+
+        if ($verificar->get_result()->num_rows === 0) {
+            responder(["error" => "No se encontró ese dibujo."], 404);
+        }
+
+        $consulta = $conexion->prepare(
+            "INSERT INTO comentarios (dibujo_id, usuario_id, comentario)
+            VALUES (?, ?, ?)"
+        );
+        $consulta->bind_param("iis", $dibujoId, $usuarioId, $comentario);
         $consulta->execute();
 
         responder(["ok" => true]);

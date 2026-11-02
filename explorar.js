@@ -72,34 +72,82 @@ async function cargarGaleriaPublica() {
 
         dibujos.forEach(function (dibujo) {
             const tarjeta = document.createElement("div");
-            tarjeta.className = "tarjeta";
+            tarjeta.className = "tarjeta publicacion";
 
             tarjeta.innerHTML = `
-                <img src="${dibujo.imagen}" alt="${dibujo.nombre}">
-                <h3>${dibujo.nombre}</h3>
+                <img src="${escaparHTML(dibujo.imagen)}" alt="${escaparHTML(dibujo.nombre)}">
                 <p class="autor">Por: <a class="perfil-autor"></a></p>
+                <h3>${escaparHTML(dibujo.nombre)}</h3>
                 <div class="valoracion">
                     <span>Valoración:</span>
                     <div class="estrellas">${crearEstrellasPublicas(dibujo.valoracion || 0, dibujo.mi_valoracion || 0, dibujo.id)}</div>
                     <small class="promedio-valoracion">${Number(dibujo.valoracion || 0).toFixed(1)} / 5</small>
                 </div>
-                <button onclick="descargarDibujoPublico('${dibujo.id}', '${dibujo.nombre}', '${dibujo.imagen}')">📥 Descargar</button>
+                <button class="btn-descarga-publica" type="button">📥 Descargar</button>
+                <section class="comentarios" aria-label="Comentarios">
+                    <h4>Comentarios</h4>
+                    <ul class="lista-comentarios"></ul>
+                    <form class="form-comentario">
+                        <textarea name="comentario" maxlength="500" rows="2" placeholder="Escribe un comentario..." required aria-label="Escribe un comentario"></textarea>
+                        <button type="submit">Comentar</button>
+                        <small class="estado-comentario" aria-live="polite"></small>
+                    </form>
+                </section>
             `;
 
             const enlacePerfil = tarjeta.querySelector(".perfil-autor");
             enlacePerfil.href = `perfil-publico.php?id=${Number(dibujo.usuario_id)}`;
             enlacePerfil.textContent = dibujo.usuario || "Usuario";
 
+            tarjeta.querySelector(".btn-descarga-publica").addEventListener("click", function () {
+                descargarDibujoPublico(dibujo.id, dibujo.nombre, dibujo.imagen);
+            });
+
+            const listaComentarios = tarjeta.querySelector(".lista-comentarios");
+            (dibujo.comentarios || []).forEach(function (comentario) {
+                const elemento = document.createElement("li");
+                const autor = document.createElement("a");
+                const texto = document.createElement("p");
+                const fecha = document.createElement("time");
+
+                autor.href = `perfil-publico.php?id=${Number(comentario.usuario_id)}`;
+                autor.className = "perfil-autor";
+                autor.textContent = comentario.usuario || "Usuario";
+                texto.textContent = comentario.comentario;
+                fecha.textContent = new Date(comentario.fecha_creacion.replace(" ", "T")).toLocaleString();
+                elemento.append(autor, texto, fecha);
+                listaComentarios.appendChild(elemento);
+            });
+
+            const formularioComentario = tarjeta.querySelector(".form-comentario");
+            formularioComentario.addEventListener("submit", function (evento) {
+                evento.preventDefault();
+                publicarComentario(dibujo.id, formularioComentario);
+            });
+
             galeria.appendChild(tarjeta);
         });
 
         if (buscador) {
-            buscador.addEventListener("input", filtrarGaleriaPublica);
+            buscador.oninput = filtrarGaleriaPublica;
+            filtrarGaleriaPublica();
         }
 
     } catch (error) {
         galeria.innerHTML = `<p>${error.message}</p>`;
     }
+}
+
+function escaparHTML(valor) {
+    return String(valor).replace(/[&<>"']/g, function (caracter) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[caracter];
+    });
 }
 
 function crearEstrellasPublicas(valoracion, miValoracion = 0, dibujoId) {
@@ -136,6 +184,35 @@ async function valorarDibujoPublico(dibujoId, valor) {
         await cargarGaleriaPublica();
     } catch (error) {
         alert(error.message);
+    }
+}
+
+async function publicarComentario(dibujoId, formulario) {
+    const campo = formulario.elements.comentario;
+    const estado = formulario.querySelector(".estado-comentario");
+    const comentario = campo.value.trim();
+
+    if (!comentario) {
+        return;
+    }
+
+    estado.textContent = "Enviando...";
+
+    try {
+        const respuesta = await fetch("dibujos.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ accion: "comentar", id: dibujoId, comentario: comentario })
+        });
+        const datos = await respuesta.json();
+
+        if (!respuesta.ok) {
+            throw new Error(datos.error || "No se pudo publicar el comentario.");
+        }
+
+        await cargarGaleriaPublica();
+    } catch (error) {
+        estado.textContent = error.message;
     }
 }
 

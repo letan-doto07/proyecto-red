@@ -617,6 +617,12 @@ canvas {
     margin-top: 20px;
 }
 
+.galeria-publica {
+    grid-template-columns: minmax(0, 680px);
+    justify-content: center;
+    gap: 24px;
+}
+
 
 /* =========================
    TARJETAS
@@ -637,6 +643,88 @@ canvas {
     transition:
         background 0.3s,
         color 0.3s;
+}
+
+.publicacion {
+    padding: 16px;
+    text-align: left;
+    border: 1px solid #444;
+}
+
+.publicacion > img {
+    display: block;
+    max-height: 620px;
+    object-fit: contain;
+}
+
+.publicacion .autor {
+    margin-top: 12px;
+    color: #ccc;
+}
+
+.publicacion .valoracion {
+    border-top: 1px solid #444;
+}
+
+.comentarios {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #444;
+}
+
+.comentarios h4 {
+    margin-bottom: 10px;
+}
+
+.lista-comentarios {
+    display: grid;
+    gap: 10px;
+    list-style: none;
+}
+
+.lista-comentarios li {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+}
+
+.lista-comentarios p {
+    margin: 4px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.lista-comentarios time {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.form-comentario {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.form-comentario textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px;
+    resize: vertical;
+    color: inherit;
+    background: #1f1f1f;
+    border: 1px solid #666;
+    border-radius: 6px;
+}
+
+.form-comentario button {
+    align-self: start;
+    margin: 0;
+}
+
+.estado-comentario {
+    grid-column: 1 / -1;
+    color: #ffb6b6;
 }
 
 

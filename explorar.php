@@ -39,7 +39,7 @@ session_start();
         </div>
     </div>
 
-    <div id="galeria" class="galeria"></div>
+    <div id="galeria" class="galeria galeria-publica"></div>
 </div>
 
 <script src="explorar.js"></script>
