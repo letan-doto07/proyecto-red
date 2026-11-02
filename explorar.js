@@ -188,9 +188,15 @@ async function valorarDibujoPublico(dibujoId, valor) {
 }
 
 async function publicarComentario(dibujoId, formulario) {
+    const usuarioActual = Number(document.body.dataset.usuarioId || 0);
     const campo = formulario.elements.comentario;
     const estado = formulario.querySelector(".estado-comentario");
     const comentario = campo.value.trim();
+
+    if (!usuarioActual) {
+        estado.textContent = "Iniciá sesión para comentar dibujos.";
+        return;
+    }
 
     if (!comentario) {
         return;
