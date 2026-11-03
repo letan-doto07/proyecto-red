@@ -89,20 +89,7 @@ if (
 
         <h1>drawery</h1>
 
-        <nav class="menu-principal" aria-label="Menú principal">
-            <a href="index.php" class="btn-galeria activo" id="ver-mis-dibujos">Mis dibujos</a>
-            <a href="explorar.php" class="btn-galeria" id="ver-otros-dibujos">Ver dibujos de otros</a>
-            <input type="search" id="buscar-dibujo" placeholder="Buscar dibujo..." aria-label="Buscar dibujos por nombre">
-            <div class="usuario-menu">
-                <span id="mi-usuario">Usuario: <?php echo htmlspecialchars($_SESSION["usuario"] ?? "Invitado", ENT_QUOTES, "UTF-8"); ?></span>
-                <?php if (isset($_SESSION["usuario"])): ?>
-                <form method="post">
-                    <input type="hidden" name="accion" value="salir">
-                    <button type="submit">Cerrar sesión</button>
-                </form>
-                <?php endif; ?>
-            </div>
-        </nav>
+        
 
         <!-- BARRA DE HERRAMIENTAS -->
 
