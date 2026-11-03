@@ -28,8 +28,7 @@ if (
             if ($cuenta) {
                 $_SESSION["usuario_id"] = (int) $cuenta["id"];
                 $_SESSION["usuario"] = $cuenta["usuario"];
-                header("Location: index.php");
-                exit;
+                $mensaje = "¡Bienvenido, " . $cuenta["usuario"] . "! Has iniciado sesión correctamente.";
             } else {
                 $mensaje = "Usuario o contraseña incorrectos.";
             }
